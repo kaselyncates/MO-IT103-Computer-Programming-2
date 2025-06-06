@@ -1,104 +1,48 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.group.motorph.payroll.services.payroll_calculations;
 
 import com.group.motorph.payroll.models.EmployeeData;
-import com.group.motorph.payroll.models.WeeklyTotals;
+import com.group.motorph.payroll.models.MonthlyTotals;
 import java.util.ArrayList;
-import com.group.motorph.payroll.ui.ConsoleUI;
 import com.group.motorph.payroll.services.government_contributions.CalculatePagIbig;
 import com.group.motorph.payroll.services.government_contributions.CalculatePhilHealth;
 import com.group.motorph.payroll.services.government_contributions.CalculateSss;
 import com.group.motorph.payroll.services.government_contributions.CalculateWithholdingTax;
 
 /**
- *
- * @author MO-IT103 | CP2 | S1101
- * 
+ * Utility class to generate salary breakdown text for GUI use.
  */
-
-
 public class CalculateAndDisplay {
-    
-    /**
-     * Calculates and displays salary details for each pay period.This includes
-     * earnings, deductions, and net pay calculations.
-     * @param weeklyTotals The list where the weekly totals are being stored
-     * @param employeeData The list where the employee data are being stored
-     * @param sssFilePath The file path for SSS contribution range table
-     */
-    public static void calculateAndDisplaySalary(ArrayList<WeeklyTotals> weeklyTotals, ArrayList<EmployeeData> employeeData, String sssFilePath) {
 
-        // Process each week in the data
-        for (WeeklyTotals week : weeklyTotals) {
+    public static String getSalaryBreakdown(ArrayList<MonthlyTotals> monthlyTotals, ArrayList<EmployeeData> employeeData, String sssFilePath) {
+        StringBuilder output = new StringBuilder();
 
-            // Process employee data (usually just one employee)
+        for (MonthlyTotals month : monthlyTotals) {
             for (EmployeeData data : employeeData) {
+                double monthlyAllowances = PayrollCalculations.calculateMonthlyAllowances(data);
+                double overtimePay = PayrollCalculations.calculateOvertimePay(month.getOverTime(), data.hourlyRate);
+                double monthlyEarnings = (month.getHoursWorked() * data.hourlyRate) + overtimePay;
+                double grossMonthPay = monthlyEarnings + monthlyAllowances;
 
-                // Calculate weekly allowances from monthly values
-                // Monthly allowances are divided by 4 to get weekly equivalent
-                double weeklyAllowances = PayrollCalculations.calculateWeeklyAllowances(data);
+                double sss = CalculateSss.calculateSss(grossMonthPay, sssFilePath);
+                double pagIbig = CalculatePagIbig.calculatePagIbig(grossMonthPay);
+                double philHealth = CalculatePhilHealth.calculatePhilHealth(grossMonthPay);
+                double tax = CalculateWithholdingTax.calculateWithholdingTax(monthlyEarnings);
 
-                // Calculate overtime pay with 25% premium rate
-                // Overtime is paid at 1.25 times the regular hourly rate
-                double overtimePay = PayrollCalculations.calculateOvertimePay(week.overTime, data.hourlyRate);
-
-                // Calculate regular weekly earnings (hours worked * hourly rate)
-                // Plus overtime pay for total earnings
-                double weeklyEarnings = (week.hoursWorked * data.hourlyRate) + overtimePay;
-
-                // Calculate gross pay (earnings + allowances)
-                double grossWeekPay = weeklyEarnings + weeklyAllowances;
-
-                // Calculate mandatory government deductions
-                double sss = CalculateSss.calculateSss(grossWeekPay, sssFilePath);
-                double pagIbig = CalculatePagIbig.calculatePagIbig(grossWeekPay);
-                double philHealth = CalculatePhilHealth.calculatePhilHealth(grossWeekPay);
-                double tax = CalculateWithholdingTax.calculateWithholdingTax(weeklyEarnings);
-
-                // Calculate net pay after all deductions
                 double totalDeductions = sss + pagIbig + philHealth + tax;
-                double netWeekPay = grossWeekPay - totalDeductions;
+                double netMonthPay = grossMonthPay - totalDeductions;
 
-                // Display results in a formatted manner
-                ConsoleUI.displayWeeklySalary(week, data, sss, pagIbig, philHealth, tax, grossWeekPay, netWeekPay);
+                output.append("Pay Period: ").append(month.getPayPeriodStart()).append(" to ").append(month.getPayPeriodEnd()).append("\n");
+                output.append(String.format("Regular Hours Worked: %.2f\n", month.getHoursWorked()));
+                output.append(String.format("Overtime Hours: %.2f\n", month.getOverTime()));
+                output.append(String.format("Gross Pay: PHP %.2f\n", grossMonthPay));
+                output.append(String.format(" - SSS: PHP %.2f\n", sss));
+                output.append(String.format(" - PhilHealth: PHP %.2f\n", philHealth));
+                output.append(String.format(" - Pag-IBIG: PHP %.2f\n", pagIbig));
+                output.append(String.format(" - Tax: PHP %.2f\n", tax));
+                output.append(String.format("Net Pay: PHP %.2f\n\n", netMonthPay));
             }
         }
+
+        return output.toString();
     }
-    
-    public static String getSalaryBreakdown(ArrayList<WeeklyTotals> weeklyTotals, ArrayList<EmployeeData> employeeData, String sssFilePath) {
-    StringBuilder output = new StringBuilder();
-
-    for (WeeklyTotals week : weeklyTotals) {
-        for (EmployeeData data : employeeData) {
-            double weeklyAllowances = PayrollCalculations.calculateWeeklyAllowances(data);
-            double overtimePay = PayrollCalculations.calculateOvertimePay(week.overTime, data.hourlyRate);
-            double weeklyEarnings = (week.hoursWorked * data.hourlyRate) + overtimePay;
-            double grossWeekPay = weeklyEarnings + weeklyAllowances;
-
-            double sss = CalculateSss.calculateSss(grossWeekPay, sssFilePath);
-            double pagIbig = CalculatePagIbig.calculatePagIbig(grossWeekPay);
-            double philHealth = CalculatePhilHealth.calculatePhilHealth(grossWeekPay);
-            double tax = CalculateWithholdingTax.calculateWithholdingTax(weeklyEarnings);
-
-            double totalDeductions = sss + pagIbig + philHealth + tax;
-            double netWeekPay = grossWeekPay - totalDeductions;
-
-            output.append("Pay Period: ").append(week.payPeriodStart).append(" to ").append(week.payPeriodEnd).append("\n");
-            output.append(String.format("Regular Hours Worked: %.2f\n", week.hoursWorked));
-            output.append(String.format("Overtime Hours: %.2f\n", week.overTime));
-            output.append(String.format("Gross Pay: PHP %.2f\n", grossWeekPay));
-            output.append(String.format(" - SSS: PHP %.2f\n", sss));
-            output.append(String.format(" - PhilHealth: PHP %.2f\n", philHealth));
-            output.append(String.format(" - Pag-IBIG: PHP %.2f\n", pagIbig));
-            output.append(String.format(" - Tax: PHP %.2f\n", tax));
-            output.append(String.format("Net Pay: PHP %.2f\n\n", netWeekPay));
-        }
-    }
-
-    return output.toString();
-}
-
 }

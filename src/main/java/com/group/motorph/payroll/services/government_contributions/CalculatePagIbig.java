@@ -3,34 +3,31 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.group.motorph.payroll.services.government_contributions;
-        
+
 public class CalculatePagIbig {
-    
+
     /**
-     * Calculates Pag-IBIG contribution based on gross weekly pay. The
-     * contribution rate varies based on the pay amount.
+     * Calculates Pag-IBIG contribution based on gross monthly pay.
+     * The contribution rate varies based on the pay amount.
      *
-     * @param grossWeekPay The gross weekly pay amount
+     * @param grossMonthlyPay The gross monthly pay amount
      * @return The calculated Pag-IBIG contribution amount
      */
-    public static double calculatePagIbig(double grossWeekPay) {
+    public static double calculatePagIbig(double grossMonthlyPay) {
 
-        // Monthly thresholds converted to weekly
-        // Lower threshold: ₱1,000 monthly / 4 = ₱250 weekly
-        double lowerThreshold = 1000 / 4;
-        // Upper threshold: ₱1,500 monthly / 4 = ₱375 weekly
-        double upperThreshold = 1500 / 4;
+        // Monthly thresholds
+        double lowerThreshold = 1000;
+        double upperThreshold = 1500;
 
-        if (grossWeekPay >= lowerThreshold && grossWeekPay <= upperThreshold) {
+        if (grossMonthlyPay >= lowerThreshold && grossMonthlyPay <= upperThreshold) {
             // 1% contribution for pay within thresholds
-            return grossWeekPay * 0.01;
-        } else if (grossWeekPay > upperThreshold) {
+            return grossMonthlyPay * 0.01;
+        } else if (grossMonthlyPay > upperThreshold) {
             // 2% contribution for pay above upper threshold
-            return grossWeekPay * 0.02;
+            return grossMonthlyPay * 0.02;
         } else {
             // No contribution for pay below lower threshold
             return 0;
         }
     }
-    
 }
