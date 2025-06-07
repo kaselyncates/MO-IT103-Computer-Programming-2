@@ -1,13 +1,22 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+
+/**
+ *
+ * @author MO-IT103 | CP2 | S1101
+ * 
+ */
+
 package com.group.motorph.payroll.services.payroll_calculations;
 
 import com.group.motorph.payroll.models.EmployeeData;
 import com.group.motorph.payroll.models.MonthlyTotals;
 import com.group.motorph.payroll.models.TimeLogDetails;
-
 import java.util.ArrayList;
 
 public class PayrollCalculations {
-
     /**
      * Calculates the employee's fixed monthly allowance.
      *
@@ -59,11 +68,11 @@ public class PayrollCalculations {
     double allowances = calculateMonthlyAllowances(emp);
     double totalPay = regularPay + overtimePay + allowances;
 
-    // 
+    
     java.time.LocalDate periodStart = java.time.LocalDate.of(year, month, 1);
     java.time.LocalDate periodEnd = periodStart.withDayOfMonth(periodStart.lengthOfMonth());
 
-    // 
+    
     MonthlyTotals totals = new MonthlyTotals(
         emp.employeeId, emp.firstName, emp.lastName,
         month, year,

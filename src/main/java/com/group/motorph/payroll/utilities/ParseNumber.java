@@ -2,16 +2,15 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.group.motorph.payroll.utilities;
 
 /**
  *
  * @author MO-IT103 | CP2 | S1101
  * 
  */
+package com.group.motorph.payroll.utilities;
 
 public class ParseNumber {
-    
     /**
      * Parses a string containing a number with possible commas into a double
      * value. This is necessary because numbers in the data files may include

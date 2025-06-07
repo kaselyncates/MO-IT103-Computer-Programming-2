@@ -2,7 +2,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.group.motorph.payroll.services.government_contributions;
 
 /**
  *
@@ -10,8 +9,9 @@ package com.group.motorph.payroll.services.government_contributions;
  * 
  */
 
+package com.group.motorph.payroll.services.government_contributions;
+
 public class CalculatePhilHealth {
-    
     /**
      * Calculates PhilHealth contribution based on gross monthly pay.
      * The contribution is calculated as 3% of gross pay, split equally between

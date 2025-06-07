@@ -2,6 +2,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
+
+/**
+ *
+ * @author MO-IT103 | CP2 | S1101
+ * 
+ */
+
 package com.group.motorph.payroll.services.government_contributions;
 
 import java.io.BufferedReader;
@@ -17,6 +24,7 @@ import com.group.motorph.payroll.utilities.ParseNumber;
  * @param sssFilePath The file path of the SSS table
  * @return The calculated SSS contribution amount
  */
+
 public class CalculateSss {
 
     public static double calculateSss(double grossMonthlyPay, String sssFilePath) {

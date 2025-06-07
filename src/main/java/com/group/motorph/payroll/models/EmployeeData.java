@@ -10,7 +10,6 @@ package com.group.motorph.payroll.models;
  * 
  */
 
-
 /**
  * The EmployeeData class stores and manages employee information in the MotorPH
  * payroll system. It contains personal details and compensation information for
@@ -82,6 +81,33 @@ public class EmployeeData {
      */
     public double hourlyRate;
 
+    // The residential address of the employee
+    public String address;
+    
+    // The name or ID of the employee's immediate supervisor
+    public String supervisor;
+    
+    // The contact phone number of the employee
+    public String phoneNumber;
+    
+    // Tax Identification Number assigned by the government
+    public String tin;
+    
+    // Social Security System number for employee contributions
+    public String sss;
+    
+    // PhilHealth identification number for health insurance
+    public String philHealth;
+    
+    // Pag-IBIG Fund membership number for housing savings
+    public String pagIbig;
+    
+    // The employee's base monthly salary before any additions or deductions
+    public double basicSalary;
+    
+    // The total salary including basic salary and all allowances before deductions
+    public double grossSalary;
+    
     /**
      * Constructs a new EmployeeData object with the specified parameters. This
      * constructor initializes all fields with the provided values.
@@ -97,6 +123,7 @@ public class EmployeeData {
      * @param clothingAllowance The monthly clothing allowance amount
      * @param hourlyRate The employee's hourly pay rate
      */
+    
     public EmployeeData(String employeeId, String lastName, String firstName, String birthday, String status, String position,
             double riceSubsidy, double phoneAllowance, double clothingAllowance, double hourlyRate) {
         this.employeeId = employeeId;
@@ -110,6 +137,59 @@ public class EmployeeData {
         this.clothingAllowance = clothingAllowance;
         this.hourlyRate = hourlyRate;
     }
+    
+    public EmployeeData(String employeeId, String lastName, String firstName, String birthday,
+                    String address, String status, String position, String supervisor,
+                    String phoneNumber, String tin, String sss, String philHealth, String pagIbig,
+                    double riceSubsidy, double phoneAllowance, double clothingAllowance,
+                    double hourlyRate, double basicSalary, double grossSalary) {
+
+        this.employeeId = employeeId;
+        this.lastName = lastName;
+        this.firstName = firstName;
+        this.birthday = birthday;
+        this.address = address;
+        this.status = status;
+        this.position = position;
+        this.supervisor = supervisor;
+        this.phoneNumber = phoneNumber;
+        this.tin = tin;
+        this.sss = sss;
+        this.philHealth = philHealth;
+        this.pagIbig = pagIbig;
+        this.riceSubsidy = riceSubsidy;
+        this.phoneAllowance = phoneAllowance;
+        this.clothingAllowance = clothingAllowance;
+        this.hourlyRate = hourlyRate;
+        this.basicSalary = basicSalary;
+        this.grossSalary = grossSalary;
+    }
+
+    public String viewEmployeeRecord() {
+    return String.format(
+        "Employee ID: %s\n" +
+        "Name: %s %s\n" +
+        "Birthday: %s\n" +
+        "Address: %s\n" +
+        "Status: %s\n" +
+        "Position: %s\n" +
+        "Supervisor: %s\n" +
+        "Phone Number: %s\n" +
+        "TIN: %s\n" +
+        "SSS: %s\n" +
+        "PhilHealth: %s\n" +
+        "Pag-IBIG: %s\n" +
+        "Rice Subsidy: %.2f\n" +
+        "Phone Allowance: %.2f\n" +
+        "Clothing Allowance: %.2f\n" +
+        "Hourly Rate: %.2f\n" +
+        "Basic Salary: %.2f\n" +
+        "Gross Salary: %.2f",
+        employeeId, firstName, lastName, birthday, address, status, position, supervisor,
+        phoneNumber, tin, sss, philHealth, pagIbig, riceSubsidy, phoneAllowance, clothingAllowance,
+        hourlyRate, basicSalary, grossSalary
+    );
+}
 
     /**
      * Returns a string representation of the EmployeeData object. This method
@@ -123,4 +203,6 @@ public class EmployeeData {
         return String.format("Employee ID: %s, Last Name: %s, First Name: %s, Birthday: %s, Status: %s, Position: %s, Rice Subsidy: %.2f, Phone Allowance: %.2f, Clothing Allowance: %.2f, Hourly Rate: %.2f",
                 employeeId, lastName, firstName, birthday, status, position, riceSubsidy, phoneAllowance, clothingAllowance, hourlyRate);
     }
+    
+    
 }

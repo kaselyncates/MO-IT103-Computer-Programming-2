@@ -2,6 +2,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
+
+/**
+ *
+ * @author MO-IT103 | CP2 | S1101
+ * 
+ */
+
 package com.group.motorph.payroll.services.data_loader;
 
 import com.group.motorph.payroll.models.TimeLogDetails;
@@ -15,13 +22,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.Locale;
-
-
-/**
- *
- * @author MO-IT103 | CP2 | S1101
- * 
- */
 
 public class LoadTimeSheet {
     
@@ -52,6 +52,7 @@ public class LoadTimeSheet {
      * @param attendanceRecordPath The file path of attendance record table
      * @param timeSheet The list where the loaded employee time logs will be stored
      */
+    
     public static void loadTimeSheet(String targetEmployeeId, String attendanceRecordPath, ArrayList<TimeLogDetails> timeSheet) {
         try (BufferedReader br = new BufferedReader(new FileReader(attendanceRecordPath))) {
             // Skip header

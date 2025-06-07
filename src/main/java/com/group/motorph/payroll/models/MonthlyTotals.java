@@ -1,3 +1,14 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+
+/**
+ *
+ * @author MO-IT103 | CP2 | S1101
+ * 
+ */
+
 package com.group.motorph.payroll.models;
 
 import java.time.LocalDate;
@@ -41,7 +52,7 @@ public class MonthlyTotals {
         this.payPeriodEnd = payPeriodEnd;
     }
 
-    // Getters (add these if missing)
+    // Getters
     public double getHoursWorked() {
         return hoursWorked;
     }

@@ -2,10 +2,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.group.motorph.payroll.models;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
 
 /**
  *
@@ -13,11 +9,17 @@ import java.time.LocalTime;
  * 
  */
 
+package com.group.motorph.payroll.models;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 /**
  * The TimeLogDetails class tracks and manages employee attendance records. It
  * stores individual time entries including login and logout times, calculates
  * hours worked, and tracks overtime for payroll processing.
  */
+
 public class TimeLogDetails {
 
     // Employee identification information
@@ -90,6 +92,7 @@ public class TimeLogDetails {
      * @param overTime The total overtime hours for the day
      * @param weekNumber The week number within the year
      */
+    
     public TimeLogDetails(String employeeId, String lastName, String firstName,
             LocalDate date, LocalTime logIn, LocalTime logOut, double hoursWorked, double overTime, int weekNumber) {
 
@@ -111,6 +114,7 @@ public class TimeLogDetails {
      *
      * @return A formatted string containing all time log data fields
      */
+    
     @Override
     public String toString() {
         return String.format("Employee ID: %s, Last Name: %s, First Name: %s, Date: %s, Log In: %s, Log Out: %s, Hours Worked: %.2f, Over Time: %.2f, Week Number: %d",
