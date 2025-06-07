@@ -68,4 +68,9 @@ public class MonthlyTotals {
     public LocalDate getPayPeriodEnd() {
         return payPeriodEnd;
     }
+    
+    public String getMonthName() {
+    return payPeriodStart.getMonth().getDisplayName(java.time.format.TextStyle.FULL, java.util.Locale.ENGLISH);
+}
+
 }
