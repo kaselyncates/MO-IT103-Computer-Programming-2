@@ -92,29 +92,7 @@ public class PayrollGUI extends JFrame {
         calculateButton.addActionListener(e -> calculatePayroll());
         viewRecordButton.addActionListener(e -> viewEmployeeRecord());
         viewAllButton.addActionListener(e -> viewAllEmployees());
-        viewRecordButton.addActionListener((ActionEvent e) -> {
-            String empIdInput = idField.getText().trim();
-            
-            if (!empIdInput.isEmpty()) {
-                try {
-                    // Load the employee data using your new method
-                    EmployeeData emp = LoadEmployeeData.getFullEmployeeDetails(empIdInput, EMPLOYEE_DATA_PATH);
-                    
-                    if (emp != null) {
-                        resultArea.setText(emp.viewEmployeeRecord()); // Display full record
-                    } else {
-                        resultArea.setText("Employee ID not found.");
-                    }
-                    
-                } catch (Exception ex) {
-                    resultArea.setText("Error loading employee data: " + ex.getMessage());
-                }
-            } else {
-                resultArea.setText("Please enter an Employee ID.");
-            }
-        });
-
-
+        
         setVisible(true);
     }
 
@@ -253,9 +231,15 @@ public class PayrollGUI extends JFrame {
     employeeData.clear();
     String employeeId = idField.getText().trim();
 
+    // Fallback to selectedEmployeeId if text field is empty
     if (employeeId.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Please enter an Employee ID.");
-        return;
+        if (selectedEmployeeId != null && !selectedEmployeeId.isEmpty()) {
+            employeeId = selectedEmployeeId;
+            idField.setText(employeeId);  // Optional: update the text field for clarity
+        } else {
+            JOptionPane.showMessageDialog(this, "Please enter or select an Employee ID.");
+            return;
+        }
     }
 
     try {
@@ -267,37 +251,51 @@ public class PayrollGUI extends JFrame {
             return;
         }
 
-        StringBuilder output = new StringBuilder();
-
-        output.append("Employee ID: ").append(emp.employeeId).append("\n");
-        output.append("Name: ").append(emp.firstName).append(" ").append(emp.lastName).append("\n");
-        output.append("Birthday: ").append(emp.birthday).append("\n");
-        output.append("Address: ").append(emp.address).append("\n");
-        output.append("Phone Number: ").append(emp.phoneNumber).append("\n\n");
-        
-        output.append("Status: ").append(emp.status).append("\n");
-        output.append("Position: ").append(emp.position).append("\n");
-        output.append("Supervisor: ").append(emp.supervisor).append("\n\n");
-        
-        output.append("TIN: ").append(emp.tin).append("\n");
-        output.append("SSS: ").append(emp.sss).append("\n");
-        output.append("PhilHealth: ").append(emp.philHealth).append("\n");
-        output.append("Pag-IBIG: ").append(emp.pagIbig).append("\n\n");
-        
-        output.append(String.format("Rice Subsidy: PHP %.2f\n", emp.riceSubsidy));
-        output.append(String.format("Phone Allowance: PHP %.2f\n", emp.phoneAllowance));
-        output.append(String.format("Clothing Allowance: PHP %.2f\n\n", emp.clothingAllowance));
-        
-        output.append(String.format("Hourly Rate: PHP %.2f\n", emp.hourlyRate));
-        output.append(String.format("Basic Salary: PHP %.2f\n\n", emp.basicSalary));
-        
-        output.append(String.format("Gross Salary: PHP %.2f\n\n", emp.grossSalary));
-
-        resultArea.setText(output.toString());
+        showEmployeeDetailsInNewFrame(emp);
 
     } catch (Exception ex) {
         resultArea.setText("Error loading employee record: " + ex.getMessage());
     }
+}
+
+
+    private void showEmployeeDetailsInNewFrame(EmployeeData emp) {
+    JFrame detailsFrame = new JFrame("Employee Details - " + emp.employeeId);
+    detailsFrame.setSize(500, 600);
+    detailsFrame.setLocationRelativeTo(this);
+    detailsFrame.setLayout(new BorderLayout());
+
+    JTextArea detailsArea = new JTextArea();
+    detailsArea.setEditable(false);
+    JScrollPane scrollPane = new JScrollPane(detailsArea);
+
+    StringBuilder output = new StringBuilder();
+    output.append("Employee ID: ").append(emp.employeeId).append("\n");
+    output.append("Name: ").append(emp.firstName).append(" ").append(emp.lastName).append("\n");
+    output.append("Birthday: ").append(emp.birthday).append("\n");
+    output.append("Address: ").append(emp.address).append("\n");
+    output.append("Phone Number: ").append(emp.phoneNumber).append("\n\n");
+
+    output.append("Status: ").append(emp.status).append("\n");
+    output.append("Position: ").append(emp.position).append("\n");
+    output.append("Supervisor: ").append(emp.supervisor).append("\n\n");
+
+    output.append("TIN: ").append(emp.tin).append("\n");
+    output.append("SSS: ").append(emp.sss).append("\n");
+    output.append("PhilHealth: ").append(emp.philHealth).append("\n");
+    output.append("Pag-IBIG: ").append(emp.pagIbig).append("\n\n");
+
+    output.append(String.format("Rice Subsidy: PHP %.2f\n", emp.riceSubsidy));
+    output.append(String.format("Phone Allowance: PHP %.2f\n", emp.phoneAllowance));
+    output.append(String.format("Clothing Allowance: PHP %.2f\n\n", emp.clothingAllowance));
+
+    output.append(String.format("Hourly Rate: PHP %.2f\n", emp.hourlyRate));
+    output.append(String.format("Basic Salary: PHP %.2f\n\n", emp.basicSalary));
+    output.append(String.format("Gross Salary: PHP %.2f\n\n", emp.grossSalary));
+
+    detailsArea.setText(output.toString());
+    detailsFrame.add(scrollPane, BorderLayout.CENTER);
+    detailsFrame.setVisible(true);
 }
 
     public static void main(String[] args) {
