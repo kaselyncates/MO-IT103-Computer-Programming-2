@@ -24,4 +24,13 @@
         <maven.compiler.release>23</maven.compiler.release>
         <exec.mainClass>com.mycompany.motorphpayroll.MotorPHPayroll</exec.mainClass>
     </properties>
+      <dependencies>
+        <!-- OpenCSV Dependency -->
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>5.11</version>
+        </dependency>
+    </dependencies>
 </project>
+

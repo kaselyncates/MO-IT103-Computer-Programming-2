@@ -36,11 +36,16 @@ public class PayrollGUI extends JFrame {
 
     private JTextField idField;
     private JTextArea resultArea;
-    private JComboBox<String> monthComboBox;
+    
+    private JTable employeeTable;
+    private JScrollPane tableScrollPane;
+    private String selectedEmployeeId = null;  // stores the selected Employee ID
+
 
     private static final String EMPLOYEE_DATA_PATH = Paths.get("src", "main", "java", "com", "group", "motorph", "resources", "employee-data.tsv").toString();
     private static final String ATTENDANCE_RECORD_PATH = Paths.get("src", "main", "java", "com", "group", "motorph", "resources", "attendance-record.csv").toString();
     private static final String SSS_TABLE_PATH = Paths.get("src", "main", "java", "com", "group", "motorph", "resources", "sss-contribution-table.tsv").toString();
+
     
     public PayrollGUI() {
         // Main window title and size
@@ -67,40 +72,47 @@ public class PayrollGUI extends JFrame {
         JButton viewAllButton = new JButton("View All Employees");
         topPanel.add(viewAllButton);
 
-        // Output area
+       // Output area: text and table views
         resultArea = new JTextArea();
         resultArea.setEditable(false);
-        JScrollPane scrollPane = new JScrollPane(resultArea);
+        JScrollPane textScrollPane = new JScrollPane(resultArea);
+
+        employeeTable = new JTable(); // initially empty
+        tableScrollPane = new JScrollPane(employeeTable);
+
+        // Use CardLayout to switch between text and table
+        JPanel displayPanel = new JPanel(new CardLayout());
+        displayPanel.add(textScrollPane, "TEXT");
+        displayPanel.add(tableScrollPane, "TABLE");
+
         add(topPanel, BorderLayout.NORTH);
-        add(scrollPane, BorderLayout.CENTER);
+        add(displayPanel, BorderLayout.CENTER);
 
         // Add button actions
         calculateButton.addActionListener(e -> calculatePayroll());
         viewRecordButton.addActionListener(e -> viewEmployeeRecord());
         viewAllButton.addActionListener(e -> viewAllEmployees());
-        viewRecordButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-        String empIdInput = idField.getText().trim();
-
-        if (!empIdInput.isEmpty()) {
-            try {
-                // Load the employee data using your new method
-                EmployeeData emp = LoadEmployeeData.getFullEmployeeDetails(empIdInput, "src/data/EmployeeData.tsv");
-
-                if (emp != null) {
-                    resultArea.setText(emp.viewEmployeeRecord()); // Display full record
-                } else {
-                    resultArea.setText("Employee ID not found.");
+        viewRecordButton.addActionListener((ActionEvent e) -> {
+            String empIdInput = idField.getText().trim();
+            
+            if (!empIdInput.isEmpty()) {
+                try {
+                    // Load the employee data using your new method
+                    EmployeeData emp = LoadEmployeeData.getFullEmployeeDetails(empIdInput, EMPLOYEE_DATA_PATH);
+                    
+                    if (emp != null) {
+                        resultArea.setText(emp.viewEmployeeRecord()); // Display full record
+                    } else {
+                        resultArea.setText("Employee ID not found.");
+                    }
+                    
+                } catch (Exception ex) {
+                    resultArea.setText("Error loading employee data: " + ex.getMessage());
                 }
-
-            } catch (Exception ex) {
-                resultArea.setText("Error loading employee data: " + ex.getMessage());
+            } else {
+                resultArea.setText("Please enter an Employee ID.");
             }
-        } else {
-            resultArea.setText("Please enter an Employee ID.");
-        }
-    }
-});
+        });
 
 
         setVisible(true);
@@ -187,31 +199,54 @@ public class PayrollGUI extends JFrame {
 
     //view all employee records
     private void viewAllEmployees() {
-        try {
-            ArrayList<EmployeeData> allEmployees = new ArrayList<>();
-            LoadEmployeeData.loadAllEmployees(EMPLOYEE_DATA_PATH, allEmployees);
+    ArrayList<EmployeeData> allEmployees = new ArrayList<>();
+    LoadEmployeeData.loadAllEmployees(EMPLOYEE_DATA_PATH, allEmployees);
 
-            if (allEmployees.isEmpty()) {
-                resultArea.setText("No employee records found.");
-                return;
-            }
-
-            StringBuilder output = new StringBuilder("All Employees:\n\n");
-            for (EmployeeData emp : allEmployees) {
-                output.append("Employee ID: ").append(emp.employeeId).append("\n");
-                output.append("Name: ").append(emp.firstName).append(" ").append(emp.lastName).append("\n");
-                output.append("Birthday: ").append(emp.birthday).append("\n");
-                output.append("Position: ").append(emp.position).append("\n");
-                output.append("Status: ").append(emp.status).append("\n");
-                output.append("--------------------------\n");
-            }
-
-            resultArea.setText(output.toString());
-
-        } catch (IOException e) {
-            resultArea.setText("Error loading employee data: " + e.getMessage());
-        }
+    if (allEmployees.isEmpty()) {
+        // Show text view and display message
+        CardLayout cl = (CardLayout)((JPanel)getContentPane().getComponent(1)).getLayout();
+        cl.show((JPanel)getContentPane().getComponent(1), "TEXT");
+        resultArea.setText("No employee records found.");
+        return;
     }
+
+    // Define table column names
+    String[] columnNames = {"Employee ID", "Last Name", "First Name", "SSS", "PhilHealth", "TIN", "Pag-IBIG"};
+
+    // Fill table rows
+    String[][] rowData = new String[allEmployees.size()][7];
+    for (int i = 0; i < allEmployees.size(); i++) {
+        EmployeeData emp = allEmployees.get(i);
+        rowData[i][0] = emp.employeeId;
+        rowData[i][1] = emp.lastName;
+        rowData[i][2] = emp.firstName;
+        rowData[i][3] = emp.sss;
+        rowData[i][4] = emp.philHealth;
+        rowData[i][5] = emp.tin;
+        rowData[i][6] = emp.pagIbig;
+    }
+
+    // Create the JTable
+    employeeTable = new JTable(rowData, columnNames);
+    employeeTable.setFillsViewportHeight(true);
+    
+    // Track selected row in the table
+    employeeTable.getSelectionModel().addListSelectionListener(e -> {
+    int selectedRow = employeeTable.getSelectedRow();
+    if (selectedRow >= 0) {
+        selectedEmployeeId = (String) employeeTable.getValueAt(selectedRow, 0); // column 0 = Employee ID
+    }
+});
+
+    // Put the table inside the scroll pane
+    tableScrollPane.setViewportView(employeeTable);
+
+    // Show the table view
+    CardLayout cl = (CardLayout)((JPanel)getContentPane().getComponent(1)).getLayout();
+    cl.show((JPanel)getContentPane().getComponent(1), "TABLE");
+}
+
+
     
     //view a specific employee record
     private void viewEmployeeRecord() {
