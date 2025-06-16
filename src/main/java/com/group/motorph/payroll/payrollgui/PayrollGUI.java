@@ -27,6 +27,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextField; 
 import javax.swing.JButton;    
+import java.util.List;
+
 
 public class PayrollGUI extends JFrame {
 
@@ -261,42 +263,101 @@ public class PayrollGUI extends JFrame {
 
     private void showEmployeeDetailsInNewFrame(EmployeeData emp) {
     JFrame detailsFrame = new JFrame("Employee Details - " + emp.employeeId);
-    detailsFrame.setSize(500, 600);
+    detailsFrame.setSize(900, 600);
     detailsFrame.setLocationRelativeTo(this);
     detailsFrame.setLayout(new BorderLayout());
 
+    // Top Panel: Month Selector + Button
+    JPanel topPanel = new JPanel();
+    String[] months = {
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    };
+    JComboBox<String> monthComboBox = new JComboBox<>(months);
+    JButton computeButton = new JButton("Compute Salary");
+
+    topPanel.add(new JLabel("Select Month:"));
+    topPanel.add(monthComboBox);
+    topPanel.add(computeButton);
+
+    // Left Text Area (Employee Details)
     JTextArea detailsArea = new JTextArea();
     detailsArea.setEditable(false);
-    JScrollPane scrollPane = new JScrollPane(detailsArea);
+    JScrollPane leftScrollPane = new JScrollPane(detailsArea);
 
-    StringBuilder output = new StringBuilder();
-    output.append("Employee ID: ").append(emp.employeeId).append("\n");
-    output.append("Name: ").append(emp.firstName).append(" ").append(emp.lastName).append("\n");
-    output.append("Birthday: ").append(emp.birthday).append("\n");
-    output.append("Address: ").append(emp.address).append("\n");
-    output.append("Phone Number: ").append(emp.phoneNumber).append("\n\n");
+    // Right Text Area (Monthly Payroll)
+    JTextArea payrollArea = new JTextArea();
+    payrollArea.setEditable(false);
+    JScrollPane rightScrollPane = new JScrollPane(payrollArea);
 
-    output.append("Status: ").append(emp.status).append("\n");
-    output.append("Position: ").append(emp.position).append("\n");
-    output.append("Supervisor: ").append(emp.supervisor).append("\n\n");
+    // Panel to hold the two areas side by side
+    JPanel centerPanel = new JPanel(new GridLayout(1, 2));
+    centerPanel.add(leftScrollPane);
+    centerPanel.add(rightScrollPane);
 
-    output.append("TIN: ").append(emp.tin).append("\n");
-    output.append("SSS: ").append(emp.sss).append("\n");
-    output.append("PhilHealth: ").append(emp.philHealth).append("\n");
-    output.append("Pag-IBIG: ").append(emp.pagIbig).append("\n\n");
+    // Base output for employee details
+    StringBuilder baseOutput = new StringBuilder();
+    baseOutput.append("Employee ID: ").append(emp.employeeId).append("\n");
+    baseOutput.append("Name: ").append(emp.firstName).append(" ").append(emp.lastName).append("\n");
+    baseOutput.append("Birthday: ").append(emp.birthday).append("\n");
+    baseOutput.append("Address: ").append(emp.address).append("\n");
+    baseOutput.append("Phone Number: ").append(emp.phoneNumber).append("\n\n");
 
-    output.append(String.format("Rice Subsidy: PHP %.2f\n", emp.riceSubsidy));
-    output.append(String.format("Phone Allowance: PHP %.2f\n", emp.phoneAllowance));
-    output.append(String.format("Clothing Allowance: PHP %.2f\n\n", emp.clothingAllowance));
+    baseOutput.append("Status: ").append(emp.status).append("\n");
+    baseOutput.append("Position: ").append(emp.position).append("\n");
+    baseOutput.append("Supervisor: ").append(emp.supervisor).append("\n\n");
 
-    output.append(String.format("Hourly Rate: PHP %.2f\n", emp.hourlyRate));
-    output.append(String.format("Basic Salary: PHP %.2f\n\n", emp.basicSalary));
-    output.append(String.format("Gross Salary: PHP %.2f\n\n", emp.grossSalary));
+    baseOutput.append("TIN: ").append(emp.tin).append("\n");
+    baseOutput.append("SSS: ").append(emp.sss).append("\n");
+    baseOutput.append("PhilHealth: ").append(emp.philHealth).append("\n");
+    baseOutput.append("Pag-IBIG: ").append(emp.pagIbig).append("\n\n");
 
-    detailsArea.setText(output.toString());
-    detailsFrame.add(scrollPane, BorderLayout.CENTER);
+    baseOutput.append(String.format("Rice Subsidy: PHP %.2f\n", emp.riceSubsidy));
+    baseOutput.append(String.format("Phone Allowance: PHP %.2f\n", emp.phoneAllowance));
+    baseOutput.append(String.format("Clothing Allowance: PHP %.2f\n\n", emp.clothingAllowance));
+
+    baseOutput.append(String.format("Hourly Rate: PHP %.2f\n", emp.hourlyRate));
+    baseOutput.append(String.format("Basic Salary: PHP %.2f\n", emp.basicSalary));
+    baseOutput.append(String.format("Gross Salary: PHP %.2f\n\n", emp.grossSalary));
+
+    detailsArea.setText(baseOutput.toString());
+
+    // Compute salary on button click
+    computeButton.addActionListener(e -> {
+        String selectedMonth = (String) monthComboBox.getSelectedItem();
+        ArrayList<TimeLogDetails> timeSheet = new ArrayList<>();
+        ArrayList<MonthlyTotals> monthlyTotals = new ArrayList<>();
+
+        try {
+            LoadTimeSheet.loadTimeSheet(emp.employeeId, ATTENDANCE_RECORD_PATH, timeSheet);
+            PayrollCalculations.calculateMonthlyTotals(timeSheet, monthlyTotals, emp);
+
+            ArrayList<MonthlyTotals> filtered = new ArrayList<>();
+            for (MonthlyTotals mt : monthlyTotals) {
+                if (mt.getMonthName().equalsIgnoreCase(selectedMonth)) {
+                    filtered.add(mt);
+                }
+            }
+
+            if (!filtered.isEmpty()) {
+                ArrayList<EmployeeData> singleEmployeeList = new ArrayList<>(List.of(emp));
+                String breakdown = CalculateAndDisplay.getSalaryBreakdown(filtered, singleEmployeeList, SSS_TABLE_PATH);
+                payrollArea.setText("Payroll for " + selectedMonth + ":\n\n" + breakdown);
+            } else {
+                payrollArea.setText("No payroll data available for " + selectedMonth + ".");
+            }
+
+        } catch (Exception ex) {
+            payrollArea.setText("Error computing salary: " + ex.getMessage());
+        }
+    });
+
+    detailsFrame.add(topPanel, BorderLayout.NORTH);
+    detailsFrame.add(centerPanel, BorderLayout.CENTER);
     detailsFrame.setVisible(true);
 }
+
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(PayrollGUI::new);
