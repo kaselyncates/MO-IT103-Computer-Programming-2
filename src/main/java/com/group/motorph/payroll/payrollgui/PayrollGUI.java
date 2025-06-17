@@ -28,6 +28,11 @@ import java.awt.event.ActionEvent;
 import javax.swing.JTextField; 
 import javax.swing.JButton;    
 import java.util.List;
+import com.opencsv.CSVWriter;
+import java.io.FileWriter;
+import javax.swing.table.DefaultTableModel;
+import com.group.motorph.payroll.services.data_writer.EmployeeFileWriter;
+import com.group.motorph.payroll.models.EmployeeData;
 
 
 public class PayrollGUI extends JFrame {
@@ -42,8 +47,7 @@ public class PayrollGUI extends JFrame {
     private JTable employeeTable;
     private JScrollPane tableScrollPane;
     private String selectedEmployeeId = null;  // stores the selected Employee ID
-
-
+   
     private static final String EMPLOYEE_DATA_PATH = Paths.get("src", "main", "java", "com", "group", "motorph", "resources", "employee-data.tsv").toString();
     private static final String ATTENDANCE_RECORD_PATH = Paths.get("src", "main", "java", "com", "group", "motorph", "resources", "attendance-record.csv").toString();
     private static final String SSS_TABLE_PATH = Paths.get("src", "main", "java", "com", "group", "motorph", "resources", "sss-contribution-table.tsv").toString();
@@ -74,6 +78,10 @@ public class PayrollGUI extends JFrame {
         JButton viewAllButton = new JButton("View All Employees");
         topPanel.add(viewAllButton);
 
+        //add new employee
+        JButton newEmployeeButton = new JButton("New Employee");
+        topPanel.add(newEmployeeButton);
+        
        // Output area: text and table views
         resultArea = new JTextArea();
         resultArea.setEditable(false);
@@ -94,6 +102,7 @@ public class PayrollGUI extends JFrame {
         calculateButton.addActionListener(e -> calculatePayroll());
         viewRecordButton.addActionListener(e -> viewEmployeeRecord());
         viewAllButton.addActionListener(e -> viewAllEmployees());
+        newEmployeeButton.addActionListener(e -> openNewEmployeeForm());
         
         setVisible(true);
     }
@@ -355,6 +364,186 @@ public class PayrollGUI extends JFrame {
     detailsFrame.add(topPanel, BorderLayout.NORTH);
     detailsFrame.add(centerPanel, BorderLayout.CENTER);
     detailsFrame.setVisible(true);
+}
+
+    //ADD NEW EMPLOYEE
+    private void openNewEmployeeForm() {
+    JFrame formFrame = new JFrame("Add New Employee");
+    formFrame.setSize(400, 600);
+    formFrame.setLocationRelativeTo(this);
+    formFrame.setLayout(new GridLayout(0, 2, 5, 5));
+
+    // Create input fields
+    JTextField idField = new JTextField();
+    JTextField lastNameField = new JTextField();
+    JTextField firstNameField = new JTextField();
+    JTextField birthdayField = new JTextField();
+    JTextField addressField = new JTextField();
+    JTextField supervisorField = new JTextField();
+    JTextField phoneField = new JTextField();
+    JTextField tinField = new JTextField();
+    JTextField sssField = new JTextField();
+    JTextField philHealthField = new JTextField();
+    JTextField pagIbigField = new JTextField();
+    JTextField basicSalaryField = new JTextField();
+    
+    // Dropdowns for status and position
+    String[] statusOptions = { "Regular", "Probationary" };
+    JComboBox<String> statusBox = new JComboBox<>(statusOptions);
+
+    String[] positionOptions = {
+        "Account Manager", "Account Rank and File", "Account Team Leader", "Accounting Head",
+        "Chief Finance Officer", "Chief Marketing Officer", "Customer Service and Relations",
+        "HR Manager", "HR Rank and File", "HR Team Leader", "IT Operations and Systems",
+        "Payroll Manager", "Payroll Rank and File", "Payroll Team Leader",
+        "Sales & Marketing", "Supply Chain and Logistics"
+    };
+    JComboBox<String> positionBox = new JComboBox<>(positionOptions);
+
+    // Add all fields to the form
+    formFrame.add(new JLabel("Employee ID")); formFrame.add(idField);
+    formFrame.add(new JLabel("Last Name")); formFrame.add(lastNameField);
+    formFrame.add(new JLabel("First Name")); formFrame.add(firstNameField);
+    formFrame.add(new JLabel("Birthday (YYYY-MM-DD)")); formFrame.add(birthdayField);
+    formFrame.add(new JLabel("Address")); formFrame.add(addressField);
+    formFrame.add(new JLabel("Status")); formFrame.add(statusBox);
+    formFrame.add(new JLabel("Position")); formFrame.add(positionBox);
+    formFrame.add(new JLabel("Supervisor")); formFrame.add(supervisorField);
+    formFrame.add(new JLabel("Phone Number")); formFrame.add(phoneField);
+    formFrame.add(new JLabel("TIN")); formFrame.add(tinField);
+    formFrame.add(new JLabel("SSS")); formFrame.add(sssField);
+    formFrame.add(new JLabel("PhilHealth")); formFrame.add(philHealthField);
+    formFrame.add(new JLabel("Pag-IBIG")); formFrame.add(pagIbigField);
+    formFrame.add(new JLabel("Basic Salary")); formFrame.add(basicSalaryField);
+
+    JButton submitButton = new JButton("Submit");
+    formFrame.add(new JLabel());
+    formFrame.add(submitButton);
+
+    submitButton.addActionListener(e -> {
+    try {
+        String position = (String) positionBox.getSelectedItem();
+        double basicSalary = Double.parseDouble(basicSalaryField.getText());
+        double rice = 1500;
+        double phone = getPhoneAllowance(position);
+        double clothing = getClothingAllowance(position);
+        double hourly = basicSalary / 22 / 8; // 22 working days × 8 hours/day
+        double gross = basicSalary + rice + phone + clothing;
+
+        String[] newRow = {
+            idField.getText(), lastNameField.getText(), firstNameField.getText(),
+            birthdayField.getText(), addressField.getText(),
+            (String) statusBox.getSelectedItem(), position,
+            supervisorField.getText(), phoneField.getText(),
+            tinField.getText(), sssField.getText(), philHealthField.getText(), pagIbigField.getText(),
+            String.valueOf(rice), String.valueOf(phone), String.valueOf(clothing),
+            String.format("%.2f", hourly), String.format("%.2f", basicSalary), String.format("%.2f", gross)
+        };
+
+        EmployeeData newEmployee = new EmployeeData(
+        idField.getText(),
+        lastNameField.getText(),
+        firstNameField.getText(),
+        birthdayField.getText(),
+        addressField.getText(),
+        (String) statusBox.getSelectedItem(),
+        (String) positionBox.getSelectedItem(),
+        supervisorField.getText(),
+        phoneField.getText(),
+        tinField.getText(),
+        sssField.getText(),
+        philHealthField.getText(),
+        pagIbigField.getText(),
+        rice, phone, clothing, hourly, basicSalary, gross
+);
+
+        EmployeeFileWriter.appendEmployee(EMPLOYEE_DATA_PATH, newRow);
+
+
+        JOptionPane.showMessageDialog(formFrame, "Employee added successfully!");
+        formFrame.dispose();
+
+        // Refresh JTable
+        refreshEmployeeTable();
+
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(formFrame, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+});
+
+    formFrame.setVisible(true);
+}
+
+    //REFRESH EMPLOYEE TABLE
+    public void refreshEmployeeTable() {
+    try {
+        ArrayList<EmployeeData> allEmployees = new ArrayList<>();
+        LoadEmployeeData.loadAllEmployees(EMPLOYEE_DATA_PATH, allEmployees); // reload everything
+
+        DefaultTableModel model = new DefaultTableModel();
+        model.setColumnIdentifiers(new String[] {
+            "Employee Number", "Last Name", "First Name", "SSS", "PhilHealth", "TIN", "Pag-IBIG"
+        });
+
+        for (EmployeeData emp : allEmployees) {
+            model.addRow(new Object[] {
+                emp.getEmployeeId(), emp.getLastName(), emp.getFirstName(),
+                emp.getSssNumber(), emp.getPhilHealthNumber(), emp.getTinNumber(), emp.getPagIbigNumber()
+            });
+        }
+
+        employeeTable.setModel(model); // update the JTable
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(null, "Error refreshing table: " + e.getMessage());
+    }
+}
+
+    
+    private double getPhoneAllowance(String position) {
+    switch (position) {
+        case "Chief Finance Officer":
+        case "Chief Marketing Officer":
+            return 2000;
+        case "IT Operations and Systems":
+        case "HR Manager":
+        case "Accounting Head":
+        case "Payroll Manager":
+        case "Account Manager":
+        case "Sales & Marketing":
+        case "Supply Chain and Logistics":
+        case "Customer Service and Relations":
+            return 1000;
+        case "HR Team Leader":
+        case "Payroll Team Leader":
+        case "Account Team Leader":
+            return 800;
+        default:
+            return 500;
+    }
+}
+
+private double getClothingAllowance(String position) {
+    switch (position) {
+        case "Chief Finance Officer":
+        case "Chief Marketing Officer":
+        case "IT Operations and Systems":
+        case "HR Manager":
+        case "Accounting Head":
+        case "Payroll Manager":
+        case "Account Manager":
+        case "Sales & Marketing":
+        case "Supply Chain and Logistics":
+        case "Customer Service and Relations":
+            return 1000;
+        case "HR Team Leader":
+        case "Payroll Team Leader":
+        case "Account Team Leader":
+            return 800;
+        default:
+            return 500;
+    }
 }
 
 
