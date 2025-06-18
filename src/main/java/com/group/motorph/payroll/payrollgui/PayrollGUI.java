@@ -33,6 +33,8 @@ import java.io.FileWriter;
 import javax.swing.table.DefaultTableModel;
 import com.group.motorph.payroll.services.data_writer.EmployeeFileWriter;
 import com.group.motorph.payroll.models.EmployeeData;
+import com.group.motorph.payroll.utilities.EmployeeDefaults;
+
 
 
 public class PayrollGUI extends JFrame {
@@ -425,8 +427,9 @@ public class PayrollGUI extends JFrame {
         String position = (String) positionBox.getSelectedItem();
         double basicSalary = Double.parseDouble(basicSalaryField.getText());
         double rice = 1500;
-        double phone = getPhoneAllowance(position);
-        double clothing = getClothingAllowance(position);
+        double phone = EmployeeDefaults.getPhoneAllowance(position);
+        double clothing = EmployeeDefaults.getClothingAllowance(position);
+
         double hourly = basicSalary / 22 / 8; // 22 working days × 8 hours/day
         double gross = basicSalary + rice + phone + clothing;
 
@@ -501,50 +504,6 @@ public class PayrollGUI extends JFrame {
 }
 
     
-    private double getPhoneAllowance(String position) {
-    switch (position) {
-        case "Chief Finance Officer":
-        case "Chief Marketing Officer":
-            return 2000;
-        case "IT Operations and Systems":
-        case "HR Manager":
-        case "Accounting Head":
-        case "Payroll Manager":
-        case "Account Manager":
-        case "Sales & Marketing":
-        case "Supply Chain and Logistics":
-        case "Customer Service and Relations":
-            return 1000;
-        case "HR Team Leader":
-        case "Payroll Team Leader":
-        case "Account Team Leader":
-            return 800;
-        default:
-            return 500;
-    }
-}
-
-private double getClothingAllowance(String position) {
-    switch (position) {
-        case "Chief Finance Officer":
-        case "Chief Marketing Officer":
-        case "IT Operations and Systems":
-        case "HR Manager":
-        case "Accounting Head":
-        case "Payroll Manager":
-        case "Account Manager":
-        case "Sales & Marketing":
-        case "Supply Chain and Logistics":
-        case "Customer Service and Relations":
-            return 1000;
-        case "HR Team Leader":
-        case "Payroll Team Leader":
-        case "Account Team Leader":
-            return 800;
-        default:
-            return 500;
-    }
-}
 
 
 

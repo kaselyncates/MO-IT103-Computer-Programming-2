@@ -190,6 +190,35 @@ public class EmployeeData {
         hourlyRate, basicSalary, grossSalary
     );
 }
+    
+    public EmployeeData(String employeeId, String lastName, String firstName, String birthday,
+                    String address, String status, String position, String supervisor,
+                    String phoneNumber, String tin, String sss, String philHealth, String pagIbig,
+                    double riceSubsidy, double phoneAllowance, double clothingAllowance,
+                    double hourlyRate, double monthlyRate) {
+    this.employeeId = employeeId;
+    this.lastName = lastName;
+    this.firstName = firstName;
+    this.birthday = birthday;
+    this.address = address;
+    this.status = status;
+    this.position = position;
+    this.supervisor = supervisor;
+    this.phoneNumber = phoneNumber;
+    this.tin = tin;
+    this.sss = sss;
+    this.philHealth = philHealth;
+    this.pagIbig = pagIbig;
+    this.riceSubsidy = riceSubsidy;
+    this.phoneAllowance = phoneAllowance;
+    this.clothingAllowance = clothingAllowance;
+    this.hourlyRate = hourlyRate;
+
+    // Use monthlyRate to compute basicSalary and grossSalary
+    this.basicSalary = monthlyRate;
+    this.grossSalary = monthlyRate + riceSubsidy + phoneAllowance + clothingAllowance;
+}
+
 
     /**
      * Returns a string representation of the EmployeeData object. This method
@@ -204,5 +233,80 @@ public class EmployeeData {
                 employeeId, lastName, firstName, birthday, status, position, riceSubsidy, phoneAllowance, clothingAllowance, hourlyRate);
     }
     
-    
+    public String getEmployeeId() {
+    return employeeId;
+}
+
+public String getLastName() {
+    return lastName;
+}
+
+public String getFirstName() {
+    return firstName;
+}
+
+public String getBirthday() {
+    return birthday;
+}
+
+public String getAddress() {
+    return address;
+}
+
+public String getStatus() {
+    return status;
+}
+
+public String getPosition() {
+    return position;
+}
+
+public String getSupervisor() {
+    return supervisor;
+}
+
+public String getPhoneNumber() {
+    return phoneNumber;
+}
+
+public String getTinNumber() {
+    return tin;
+}
+
+public String getSssNumber() {
+    return sss;
+}
+
+public String getPhilHealthNumber() {
+    return philHealth;
+}
+
+public String getPagIbigNumber() {
+    return pagIbig;
+}
+
+public double getRiceSubsidy() {
+    return riceSubsidy;
+}
+
+public double getPhoneAllowance() {
+    return phoneAllowance;
+}
+
+public double getClothingAllowance() {
+    return clothingAllowance;
+}
+
+public double getHourlyRate() {
+    return hourlyRate;
+}
+
+public double getBasicSalary() {
+    return basicSalary;
+}
+
+public double getGrossSalary() {
+    return grossSalary;
+}
+
 }

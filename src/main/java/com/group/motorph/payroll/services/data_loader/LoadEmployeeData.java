@@ -19,7 +19,9 @@ import com.opencsv.CSVReaderBuilder;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 import java.util.ArrayList;
+
 import com.opencsv.exceptions.CsvValidationException;
 
 public class LoadEmployeeData {
@@ -128,4 +130,31 @@ public class LoadEmployeeData {
 
         return null;
     }
+    
+    public static List<EmployeeData> getAllEmployees(String filePath) throws IOException, CsvValidationException
+ {
+    List<EmployeeData> employees = new ArrayList<>();
+
+    try (CSVReader reader = new CSVReader(new FileReader(filePath))) {
+        String[] nextLine;
+        while ((nextLine = reader.readNext()) != null) {
+            if (nextLine.length < 18) continue; // Skip invalid lines
+
+            EmployeeData emp = new EmployeeData(
+                nextLine[0], nextLine[1], nextLine[2], nextLine[3], nextLine[4],
+                nextLine[5], nextLine[6], nextLine[7], nextLine[8], nextLine[9],
+                nextLine[10], nextLine[11], nextLine[12],
+                Double.parseDouble(nextLine[13]),
+                Double.parseDouble(nextLine[14]),
+                Double.parseDouble(nextLine[15]),
+                Double.parseDouble(nextLine[16]),
+                Double.parseDouble(nextLine[17])
+            );
+            employees.add(emp);
+        }
+    }
+
+    return employees;
+}
+
 }
