@@ -14,6 +14,9 @@ import com.opencsv.CSVWriter;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
+import com.group.motorph.payroll.models.EmployeeData;
+
 
 /**
  * Utility class for writing employee data to a TSV (tab-separated values) file.
@@ -40,4 +43,42 @@ public class EmployeeFileWriter {
             writer.writeNext(fields);
         }
     }
+    
+    public static void overwriteEmployeeData(String filePath, List<EmployeeData> employees) throws IOException {
+    try (CSVWriter writer = new CSVWriter(new FileWriter(filePath, false), '\t',
+            CSVWriter.NO_QUOTE_CHARACTER,
+            CSVWriter.DEFAULT_ESCAPE_CHARACTER,
+            CSVWriter.DEFAULT_LINE_END)) {
+
+      
+
+        for (EmployeeData emp : employees) {
+            String[] row = {
+                emp.getEmployeeId(),
+                emp.getLastName(),
+                emp.getFirstName(),
+                emp.getBirthday(),
+                emp.getAddress(),
+                emp.getPhoneNumber(),
+                emp.getSssNumber(),
+                emp.getPhilHealthNumber(),
+                emp.getPagIbigNumber(),
+                emp.getTinNumber(),
+                emp.getStatus(),
+                emp.getPosition(),
+                emp.getSupervisor(),
+                String.format("%.2f", emp.getBasicSalary()),
+                String.format("%.2f", emp.getRiceSubsidy()),
+                String.format("%.2f", emp.getPhoneAllowance()),
+                String.format("%.2f", emp.getClothingAllowance()),
+                String.format("%.2f", emp.getHourlyRate()),
+                String.format("%.2f", emp.getGrossSalary())
+            };
+            writer.writeNext(row);
+        }
+    }
 }
+}
+
+
+

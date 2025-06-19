@@ -37,6 +37,7 @@ import com.group.motorph.payroll.utilities.EmployeeDefaults;
 
 
 
+
 public class PayrollGUI extends JFrame {
 
     private final ArrayList<EmployeeData> employeeData = new ArrayList<>();
@@ -49,6 +50,7 @@ public class PayrollGUI extends JFrame {
     private JTable employeeTable;
     private JScrollPane tableScrollPane;
     private String selectedEmployeeId = null;  // stores the selected Employee ID
+    
    
     private static final String EMPLOYEE_DATA_PATH = Paths.get("src", "main", "java", "com", "group", "motorph", "resources", "employee-data.tsv").toString();
     private static final String ATTENDANCE_RECORD_PATH = Paths.get("src", "main", "java", "com", "group", "motorph", "resources", "attendance-record.csv").toString();
@@ -62,36 +64,36 @@ public class PayrollGUI extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Top panel: user inputs employee id number
+        // -------------------- TOP PANEL --------------------
         JPanel topPanel = new JPanel();
         idField = new JTextField(15);
         topPanel.add(new JLabel("Enter Employee ID:"));
         topPanel.add(idField);
        
-        //to view specific employee's complete details
+        // Buttons
         JButton viewRecordButton = new JButton("View Employee Record");
-        topPanel.add(viewRecordButton);
-        
-        //to calculate a specific employee's payroll
         JButton calculateButton = new JButton("Calculate Payroll");
-        topPanel.add(calculateButton);
-        
-        //to view all employee details
         JButton viewAllButton = new JButton("View All Employees");
-        topPanel.add(viewAllButton);
-
-        //add new employee
         JButton newEmployeeButton = new JButton("New Employee");
-        topPanel.add(newEmployeeButton);
+        JButton updateButton = new JButton("Update Employee");
+        JButton deleteButton = new JButton("Delete Employee");
         
-       // Output area: text and table views
+        // Add buttons to topPanel
+        topPanel.add(viewRecordButton);
+        topPanel.add(calculateButton);
+        topPanel.add(viewAllButton);
+        topPanel.add(newEmployeeButton);
+        topPanel.add(updateButton);
+        topPanel.add(deleteButton);
+        
+        // -------------------- CENTER DISPLAY AREA --------------------
         resultArea = new JTextArea();
         resultArea.setEditable(false);
         JScrollPane textScrollPane = new JScrollPane(resultArea);
 
         employeeTable = new JTable(); // initially empty
         tableScrollPane = new JScrollPane(employeeTable);
-
+        
         // Use CardLayout to switch between text and table
         JPanel displayPanel = new JPanel(new CardLayout());
         displayPanel.add(textScrollPane, "TEXT");
@@ -99,15 +101,18 @@ public class PayrollGUI extends JFrame {
 
         add(topPanel, BorderLayout.NORTH);
         add(displayPanel, BorderLayout.CENTER);
-
-        // Add button actions
+        
+         // -------------------- BUTTON ACTIONS --------------------
         calculateButton.addActionListener(e -> calculatePayroll());
         viewRecordButton.addActionListener(e -> viewEmployeeRecord());
         viewAllButton.addActionListener(e -> viewAllEmployees());
         newEmployeeButton.addActionListener(e -> openNewEmployeeForm());
-        
-        setVisible(true);
-    }
+        updateButton.addActionListener(e -> openUpdateForm());
+        deleteButton.addActionListener(e -> deleteSelectedEmployee());
+
+
+    setVisible(true);
+}
 
     //Calculate Payroll of a specific employee
     private void calculatePayroll() {
@@ -179,6 +184,9 @@ public class PayrollGUI extends JFrame {
 
         output.append("Payroll for Month: ").append(selectedMonth).append("\n\n");
         output.append(CalculateAndDisplay.getSalaryBreakdown(filteredMonthlyTotals, employeeData, SSS_TABLE_PATH));
+
+        CardLayout cl = (CardLayout)((JPanel)getContentPane().getComponent(1)).getLayout();
+        cl.show((JPanel)getContentPane().getComponent(1), "TEXT");
 
         resultArea.setText(output.toString());
 
@@ -408,14 +416,14 @@ public class PayrollGUI extends JFrame {
     formFrame.add(new JLabel("First Name")); formFrame.add(firstNameField);
     formFrame.add(new JLabel("Birthday (YYYY-MM-DD)")); formFrame.add(birthdayField);
     formFrame.add(new JLabel("Address")); formFrame.add(addressField);
-    formFrame.add(new JLabel("Status")); formFrame.add(statusBox);
-    formFrame.add(new JLabel("Position")); formFrame.add(positionBox);
-    formFrame.add(new JLabel("Supervisor")); formFrame.add(supervisorField);
     formFrame.add(new JLabel("Phone Number")); formFrame.add(phoneField);
-    formFrame.add(new JLabel("TIN")); formFrame.add(tinField);
     formFrame.add(new JLabel("SSS")); formFrame.add(sssField);
     formFrame.add(new JLabel("PhilHealth")); formFrame.add(philHealthField);
+    formFrame.add(new JLabel("TIN")); formFrame.add(tinField);
     formFrame.add(new JLabel("Pag-IBIG")); formFrame.add(pagIbigField);
+    formFrame.add(new JLabel("Status")); formFrame.add(statusBox);
+    formFrame.add(new JLabel("Position")); formFrame.add(positionBox);
+    formFrame.add(new JLabel("Supervisor")); formFrame.add(supervisorField);  
     formFrame.add(new JLabel("Basic Salary")); formFrame.add(basicSalaryField);
 
     JButton submitButton = new JButton("Submit");
@@ -434,14 +442,26 @@ public class PayrollGUI extends JFrame {
         double gross = basicSalary + rice + phone + clothing;
 
         String[] newRow = {
-            idField.getText(), lastNameField.getText(), firstNameField.getText(),
-            birthdayField.getText(), addressField.getText(),
-            (String) statusBox.getSelectedItem(), position,
-            supervisorField.getText(), phoneField.getText(),
-            tinField.getText(), sssField.getText(), philHealthField.getText(), pagIbigField.getText(),
-            String.valueOf(rice), String.valueOf(phone), String.valueOf(clothing),
-            String.format("%.2f", hourly), String.format("%.2f", basicSalary), String.format("%.2f", gross)
-        };
+        idField.getText(), 
+        lastNameField.getText(),      
+        firstNameField.getText(),     
+        birthdayField.getText(),      
+        addressField.getText(),       
+        phoneField.getText(),         
+        sssField.getText(),           
+        philHealthField.getText(),  
+        tinField.getText(),
+        pagIbigField.getText(),                  
+        (String) statusBox.getSelectedItem(), 
+        position,                     
+        supervisorField.getText(),    
+        String.format("%.2f", basicSalary), 
+        String.format("%.2f", rice),        
+        String.format("%.2f", phone),       
+        String.format("%.2f", clothing),    
+        String.format("%.2f", gross),       
+        String.format("%.2f", hourly)       
+};
 
         EmployeeData newEmployee = new EmployeeData(
         idField.getText(),
@@ -477,33 +497,148 @@ public class PayrollGUI extends JFrame {
     formFrame.setVisible(true);
 }
 
-    //REFRESH EMPLOYEE TABLE
-    public void refreshEmployeeTable() {
+    
+
+
+    private void openUpdateForm() {
+    int selectedRow = employeeTable.getSelectedRow();
+    if (selectedRow == -1) return; // no selection
+
+    // Get values from table
+    String id = employeeTable.getValueAt(selectedRow, 0).toString();
+    String lastName = employeeTable.getValueAt(selectedRow, 1).toString();
+    String firstName = employeeTable.getValueAt(selectedRow, 2).toString();
+    String sss = employeeTable.getValueAt(selectedRow, 3).toString();
+    String philHealth = employeeTable.getValueAt(selectedRow, 4).toString();
+    String tin = employeeTable.getValueAt(selectedRow, 5).toString();
+    String pagIbig = employeeTable.getValueAt(selectedRow, 6).toString();
+
+    // Create frame
+    JFrame updateFrame = new JFrame("Update Employee - " + id);
+    updateFrame.setSize(400, 400);
+    updateFrame.setLayout(new GridLayout(0, 2, 5, 5));
+    updateFrame.setLocationRelativeTo(this);
+
+    // Create fields
+    JTextField lastNameField = new JTextField(lastName);
+    JTextField firstNameField = new JTextField(firstName);
+    JTextField sssField = new JTextField(sss);
+    JTextField philHealthField = new JTextField(philHealth);
+    JTextField tinField = new JTextField(tin);
+    JTextField pagIbigField = new JTextField(pagIbig);
+
+    updateFrame.add(new JLabel("Last Name:")); updateFrame.add(lastNameField);
+    updateFrame.add(new JLabel("First Name:")); updateFrame.add(firstNameField);
+    updateFrame.add(new JLabel("SSS:")); updateFrame.add(sssField);
+    updateFrame.add(new JLabel("PhilHealth:")); updateFrame.add(philHealthField);
+    updateFrame.add(new JLabel("TIN:")); updateFrame.add(tinField);
+    updateFrame.add(new JLabel("Pag-IBIG:")); updateFrame.add(pagIbigField);
+
+    JButton saveButton = new JButton("Save");
+    updateFrame.add(new JLabel()); updateFrame.add(saveButton);
+
+    saveButton.addActionListener(ae -> {
+        try {
+            ArrayList<EmployeeData> allEmployees = new ArrayList<>();
+            LoadEmployeeData.loadAllEmployees(EMPLOYEE_DATA_PATH, allEmployees);
+
+            for (EmployeeData emp : allEmployees) {
+                if (emp.getEmployeeId().equals(id)) {
+                    emp.setLastName(lastNameField.getText());
+                    emp.setFirstName(firstNameField.getText());
+                    emp.setSssNumber(sssField.getText());
+                    emp.setPhilHealthNumber(philHealthField.getText());
+                    emp.setTinNumber(tinField.getText());
+                    emp.setPagIbigNumber(pagIbigField.getText());
+                    break;
+                }
+            }
+
+            EmployeeFileWriter.overwriteEmployeeData(EMPLOYEE_DATA_PATH, allEmployees);
+            JOptionPane.showMessageDialog(updateFrame, "Employee updated.");
+            updateFrame.dispose();
+            refreshEmployeeTable(); // Refresh table in main GUI
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(updateFrame, "Error: " + ex.getMessage());
+        }
+    });
+
+    updateFrame.setVisible(true);
+}
+
+        /**
+ * Deletes the selected employee from the CSV file and refreshes the table.
+ */
+    private void deleteSelectedEmployee() {
+    int selectedRow = employeeTable.getSelectedRow();
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Please select an employee to delete.");
+        return;
+    }
+
+    String employeeIdToDelete = (String) employeeTable.getValueAt(selectedRow, 0); // Column 0 = Employee ID
+
+    int confirm = JOptionPane.showConfirmDialog(
+        this,
+        "Are you sure you want to delete employee ID: " + employeeIdToDelete + "?",
+        "Confirm Deletion",
+        JOptionPane.YES_NO_OPTION
+    );
+
+    if (confirm != JOptionPane.YES_OPTION) {
+        return;
+    }
+
     try {
         ArrayList<EmployeeData> allEmployees = new ArrayList<>();
-        LoadEmployeeData.loadAllEmployees(EMPLOYEE_DATA_PATH, allEmployees); // reload everything
+        LoadEmployeeData.loadAllEmployees(EMPLOYEE_DATA_PATH, allEmployees);
+
+        // Filter out the employee to delete
+        allEmployees.removeIf(emp -> emp.getEmployeeId().equals(employeeIdToDelete));
+
+        // Overwrite the CSV with the updated list
+        EmployeeFileWriter.overwriteEmployeeData(EMPLOYEE_DATA_PATH, allEmployees);
+
+        JOptionPane.showMessageDialog(this, "Employee deleted successfully.");
+        refreshEmployeeTable(); // Reload JTable
+
+    } catch (Exception ex) {
+        ex.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Error deleting employee: " + ex.getMessage());
+    }
+}
+
+    private void refreshEmployeeTable() {
+    try {
+        ArrayList<EmployeeData> allEmployees = new ArrayList<>();
+        LoadEmployeeData.loadAllEmployees(EMPLOYEE_DATA_PATH, allEmployees);
 
         DefaultTableModel model = new DefaultTableModel();
         model.setColumnIdentifiers(new String[] {
-            "Employee Number", "Last Name", "First Name", "SSS", "PhilHealth", "TIN", "Pag-IBIG"
+            "Employee ID", "Last Name", "First Name", "SSS", "PhilHealth", "TIN", "Pag-IBIG"
         });
 
         for (EmployeeData emp : allEmployees) {
             model.addRow(new Object[] {
-                emp.getEmployeeId(), emp.getLastName(), emp.getFirstName(),
-                emp.getSssNumber(), emp.getPhilHealthNumber(), emp.getTinNumber(), emp.getPagIbigNumber()
+                emp.getEmployeeId(),
+                emp.getLastName(),
+                emp.getFirstName(),
+                emp.getSssNumber(),           
+                emp.getPhilHealthNumber(),
+                emp.getTinNumber(),
+                emp.getPagIbigNumber()
             });
         }
 
-        employeeTable.setModel(model); // update the JTable
+        employeeTable.setModel(model);
 
-    } catch (Exception e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(null, "Error refreshing table: " + e.getMessage());
+    } catch (Exception ex) {
+        ex.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Failed to load employee table.");
     }
 }
-
-    
 
 
 

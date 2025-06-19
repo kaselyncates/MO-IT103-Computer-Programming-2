@@ -309,4 +309,31 @@ public double getGrossSalary() {
     return grossSalary;
 }
 
+public void setLastName(String lastName) {
+    this.lastName = lastName;
+}
+
+public void setFirstName(String firstName) {
+    this.firstName = firstName;
+}
+
+public void setSssNumber(String sssNumber) {
+    this.sss = sssNumber;
+}
+
+public void setPhilHealthNumber(String philHealthNumber) {
+    this.philHealth = philHealthNumber;
+}
+
+public void setTinNumber(String tinNumber) {
+    this.tin = tinNumber;
+}
+
+public void setPagIbigNumber(String pagIbigNumber) {
+    this.pagIbig = pagIbigNumber;
+}
+
+
+
+
 }
