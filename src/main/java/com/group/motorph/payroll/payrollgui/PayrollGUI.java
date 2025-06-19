@@ -36,8 +36,6 @@ import com.group.motorph.payroll.models.EmployeeData;
 import com.group.motorph.payroll.utilities.EmployeeDefaults;
 
 
-
-
 public class PayrollGUI extends JFrame {
 
     private final ArrayList<EmployeeData> employeeData = new ArrayList<>();
@@ -60,31 +58,49 @@ public class PayrollGUI extends JFrame {
     public PayrollGUI() {
         // Main window title and size
         setTitle("MotorPH Payroll System");
-        setSize(700, 600);
+        setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
         // -------------------- TOP PANEL --------------------
         JPanel topPanel = new JPanel();
+        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
+
+        // --- Row 1
+        JPanel row1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
         idField = new JTextField(15);
-        topPanel.add(new JLabel("Enter Employee ID:"));
-        topPanel.add(idField);
-       
-        // Buttons
-        JButton viewRecordButton = new JButton("View Employee Record");
+        row1.add(new JLabel("Enter Employee ID:"));
+        row1.add(idField);
+
+        // --- Row 2
+        JPanel row2 = new JPanel(new GridLayout(1, 3, 10, 0));
+        JButton viewRecordButton = new JButton("View Record");
         JButton calculateButton = new JButton("Calculate Payroll");
         JButton viewAllButton = new JButton("View All Employees");
+        row2.add(viewRecordButton);
+        row2.add(calculateButton);
+        row2.add(viewAllButton);
+
+        // --- Row 3
+        JPanel row3 = new JPanel(new GridLayout(1, 3, 10, 0)); 
         JButton newEmployeeButton = new JButton("New Employee");
-        JButton updateButton = new JButton("Update Employee");
-        JButton deleteButton = new JButton("Delete Employee");
-        
-        // Add buttons to topPanel
-        topPanel.add(viewRecordButton);
-        topPanel.add(calculateButton);
-        topPanel.add(viewAllButton);
-        topPanel.add(newEmployeeButton);
-        topPanel.add(updateButton);
-        topPanel.add(deleteButton);
+        JButton updateButton = new JButton("Update");
+        JButton deleteButton = new JButton("Delete");
+        row3.add(newEmployeeButton);
+        row3.add(updateButton);
+        row3.add(deleteButton);
+
+        // --- Assemble all rows into the topPanel ---
+        topPanel.add(row1);
+        topPanel.add(Box.createVerticalStrut(10)); 
+        topPanel.add(row2);
+        topPanel.add(Box.createVerticalStrut(10)); 
+        topPanel.add(row3);
+
+        // --- Add to main layout ---
+        add(topPanel, BorderLayout.NORTH);
+
+
         
         // -------------------- CENTER DISPLAY AREA --------------------
         resultArea = new JTextArea();
@@ -114,7 +130,7 @@ public class PayrollGUI extends JFrame {
     setVisible(true);
 }
 
-    //Calculate Payroll of a specific employee
+    //----------CALCULATE PAYROLL FOR SPECIFIC EMPLOYEE----------
     private void calculatePayroll() {
     employeeData.clear();
     timeSheet.clear();
@@ -196,7 +212,7 @@ public class PayrollGUI extends JFrame {
 }
 
 
-    //view all employee records
+    //----------VIEW ALL EMPLOYEE RECORDS----------
     private void viewAllEmployees() {
     ArrayList<EmployeeData> allEmployees = new ArrayList<>();
     LoadEmployeeData.loadAllEmployees(EMPLOYEE_DATA_PATH, allEmployees);
@@ -247,7 +263,7 @@ public class PayrollGUI extends JFrame {
 
 
     
-    //view a specific employee record
+    //----------VIEW SPECIFIC EMPLOYEE RECORDS----------
     private void viewEmployeeRecord() {
     employeeData.clear();
     String employeeId = idField.getText().trim();
@@ -280,13 +296,13 @@ public class PayrollGUI extends JFrame {
 }
 
 
+    //----------VIEW SPECIFIC EMPLOYEE IN NEW FRAME----------
     private void showEmployeeDetailsInNewFrame(EmployeeData emp) {
     JFrame detailsFrame = new JFrame("Employee Details - " + emp.employeeId);
     detailsFrame.setSize(900, 600);
     detailsFrame.setLocationRelativeTo(this);
     detailsFrame.setLayout(new BorderLayout());
 
-    // Top Panel: Month Selector + Button
     JPanel topPanel = new JPanel();
     String[] months = {
         "January", "February", "March", "April", "May", "June",
@@ -299,17 +315,14 @@ public class PayrollGUI extends JFrame {
     topPanel.add(monthComboBox);
     topPanel.add(computeButton);
 
-    // Left Text Area (Employee Details)
     JTextArea detailsArea = new JTextArea();
     detailsArea.setEditable(false);
     JScrollPane leftScrollPane = new JScrollPane(detailsArea);
 
-    // Right Text Area (Monthly Payroll)
     JTextArea payrollArea = new JTextArea();
     payrollArea.setEditable(false);
     JScrollPane rightScrollPane = new JScrollPane(payrollArea);
 
-    // Panel to hold the two areas side by side
     JPanel centerPanel = new JPanel(new GridLayout(1, 2));
     centerPanel.add(leftScrollPane);
     centerPanel.add(rightScrollPane);
@@ -376,7 +389,8 @@ public class PayrollGUI extends JFrame {
     detailsFrame.setVisible(true);
 }
 
-    //ADD NEW EMPLOYEE
+    
+    //----------ADD NEW EMPLOYEE----------
     private void openNewEmployeeForm() {
     JFrame formFrame = new JFrame("Add New Employee");
     formFrame.setSize(400, 600);
@@ -498,8 +512,7 @@ public class PayrollGUI extends JFrame {
 }
 
     
-
-
+    //----------UPDATE EMPLOYEE RECORDS----------
     private void openUpdateForm() {
     int selectedRow = employeeTable.getSelectedRow();
     if (selectedRow == -1) return; // no selection
@@ -568,9 +581,8 @@ public class PayrollGUI extends JFrame {
     updateFrame.setVisible(true);
 }
 
-        /**
- * Deletes the selected employee from the CSV file and refreshes the table.
- */
+
+    //----------DELETE EMPLOYEE RECORDS----------
     private void deleteSelectedEmployee() {
     int selectedRow = employeeTable.getSelectedRow();
     if (selectedRow == -1) {
@@ -610,6 +622,8 @@ public class PayrollGUI extends JFrame {
     }
 }
 
+    
+    //----------REFRESH TABLE----------
     private void refreshEmployeeTable() {
     try {
         ArrayList<EmployeeData> allEmployees = new ArrayList<>();
@@ -639,8 +653,6 @@ public class PayrollGUI extends JFrame {
         JOptionPane.showMessageDialog(this, "Failed to load employee table.");
     }
 }
-
-
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(PayrollGUI::new);
