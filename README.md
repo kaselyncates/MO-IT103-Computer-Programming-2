@@ -25,7 +25,7 @@ This is a basic Employee Management System developed using **Java Swing** for th
 
 
 ## How to Run the Code
-- ✅Clone the Repository: 
+- ✅Clone the Repository:`https://github.com/kaselyncates/MO-IT103-Computer-Programming-2.git`
 - ✅Open in NetBeans and Build the Project
 - ✅Ensure Dependencies are Installed
 - ✅Run the Project
