@@ -7,19 +7,19 @@ S1101
 
 ---
 ## 👨‍💻 Contributors:
-- Kaselyn Cates Ponteres
-- Karla Missy Castillo
+- *Kaselyn Cates Ponteres*
+- *Karla Missy Castillo*
 ---
 ## ⚙️Employee Management Application⚙️ 
 This is a basic Employee Management System developed using **Java Swing** for the graphical user interface and **CSV files** for data storage. The application allows users to perform essential *CRUD* operations **(Create, Read, Update, Delete)** on employee records.
 
 ### Features: 
 
-- User Login Interface
-- View All Employee Records
-- Add New Employee
-- Update Existing Employee Information
-- Delete Employee Records
+- **User Login Interface**
+- **View All Employee Records**
+- **Add New Employee**
+- **Update Existing Employee Information**
+- **Delete Employee Records**
 
 ---
 
@@ -33,6 +33,6 @@ This is a basic Employee Management System developed using **Java Swing** for th
 ---
 
 ## 📌 Note:
-> This is for Educational Purposes only and not yet optimized for Production.
+> *This is for Educational Purposes only and not yet optimized for Production.*
 
 ---
