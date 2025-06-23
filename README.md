@@ -30,4 +30,9 @@ This is a basic Employee Management System developed using **Java Swing** for th
 - ✅Ensure Dependencies are Installed
 - ✅Run the Project
 
- 
+---
+
+## 📌 Note:
+> This is for Educational Purposes only and not yet optimized for Production.
+
+---
