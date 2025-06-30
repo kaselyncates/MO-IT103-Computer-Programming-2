@@ -272,7 +272,7 @@ public class PayrollGUI extends JFrame {
     if (employeeId.isEmpty()) {
         if (selectedEmployeeId != null && !selectedEmployeeId.isEmpty()) {
             employeeId = selectedEmployeeId;
-            idField.setText(employeeId);  // Optional: update the text field for clarity
+            idField.setText(employeeId);
         } else {
             JOptionPane.showMessageDialog(this, "Please enter or select an Employee ID.");
             return;
@@ -624,6 +624,7 @@ public class PayrollGUI extends JFrame {
 
     
     //----------REFRESH TABLE----------
+    // This method reloads the JTable with all employee records from the file.
     private void refreshEmployeeTable() {
     try {
         ArrayList<EmployeeData> allEmployees = new ArrayList<>();
