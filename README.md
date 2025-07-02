@@ -41,5 +41,5 @@ This is a **Java-based GUI application** developed for the **MotorPH Employee Ma
 ### Steps:
 1. **Clone the repository**  
    ```bash
-   git clone https://github.com/your-username/MotorPH-EmployeeApp.git
+   git clone https://github.com/kaselyncates/MO-IT103-Computer-Programming-2.git
    cd MotorPH-EmployeeApp
